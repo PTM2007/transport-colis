@@ -9,7 +9,7 @@ function Suivi() {
   const chercher = async () => {
     setError('');
     setColis(null);
-    const res = await fetch(`http://transport-colis.onrender.com/api/colis/${code}`);
+    const res = await fetch(`https://transport-colis.onrender.com/api/colis/${code}`);
     const data = await res.json();
     if (data.error) setError(data.error);
     else setColis(data);

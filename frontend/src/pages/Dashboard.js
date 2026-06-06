@@ -12,7 +12,7 @@ function Dashboard({ role, token, setToken }) {
   const [message, setMessage] = useState('');
 
   const chargerColis = () => {
-    fetch('http://transport-colis.onrender.com/api/colis')
+    fetch('https://transport-colis.onrender.com/api/colis')
       .then(res => res.json())
       .then(data => setColis(Array.isArray(data) ? data : []));
   };
@@ -20,7 +20,7 @@ function Dashboard({ role, token, setToken }) {
   useEffect(() => { chargerColis(); }, []);
 
   const creerColis = async () => {
-    const res = await fetch('http://transport-colis.onrender.com/api/colis', {
+    const res = await fetch('https://transport-colis.onrender.com/api/colis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
@@ -34,7 +34,7 @@ function Dashboard({ role, token, setToken }) {
   };
 
   const changerStatut = async (id, statut) => {
-    await fetch(`http://transport-colis.onrender.com/api/colis/${id}/statut`, {
+    await fetch(`https://transport-colis.onrender.com/api/colis/${id}/statut`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ statut })
