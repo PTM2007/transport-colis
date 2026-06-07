@@ -65,8 +65,13 @@ function Suivi() {
               {colis.date_livraison_estimee && <p><b>Livraison estimee :</b> {new Date(colis.date_livraison_estimee).toLocaleDateString('fr-FR')}</p>}
               {frais > 0 && (
                 <p style={{ color: '#ff6b6b', fontWeight: 'bold', background: 'rgba(255,0,0,0.2)', padding: 8, borderRadius: 5 }}>
-                  Frais de magasinage : {frais} FCFA ({joursRetard} jour{joursRetard > 1 ? 's' : ''} de retard)
-                </p>
+                  Frais de magasinage : {frais} FCFA ({joursRetard} jour{joursRetard > 1 ? 's' : ''} de retard)      
+          </p>
+{frais > 0 && colis.prix && (
+  <p style={{ color: '#ff6b6b', fontWeight: 'bold', background: 'rgba(255,0,0,0.2)', padding: 8, borderRadius: 5, marginTop: 5 }}>
+    Nouveau prix total : {parseFloat(colis.prix) + frais} FCFA
+  </p>
+)}
               )}
             <p><b>Statut :</b> <span style={{ color: statutColor(colis.statut), fontWeight: 'bold' }}>{colis.statut.replace(/_/g, ' ').toUpperCase()}</span></p>
             </div>
