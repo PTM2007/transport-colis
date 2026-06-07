@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import logo from '../logo.jpg';
 
-const calculerFraisMagasinage = (date_livraison_estimee, statut) => {
+const calculerFrais = (date_livraison_estimee, statut) => {
   if (statut === 'Livre' || !date_livraison_estimee) return 0;
-  const dateLivraison = new Date(date_livraison_estimee);
-  const delaiMax = new Date(dateLivraison.getTime() + 10 * 24 * 60 * 60 * 1000);
+  const delaiMax = new Date(new Date(date_livraison_estimee).getTime() + 10 * 24 * 60 * 60 * 1000);
   const aujourdhui = new Date();
   if (aujourdhui <= delaiMax) return 0;
-  const joursRetard = Math.floor((aujourdhui - delaiMax) / (24 * 60 * 60 * 1000));
-  return joursRetard * 200;
+  return Math.floor((aujourdhui - delaiMax) / (24 * 60 * 60 * 1000)) * 500;
 };
 
 function Suivi() {
@@ -52,31 +50,31 @@ function Suivi() {
           Rechercher
         </button>
         {error && <p style={{ color: '#ff6b6b', marginTop: 10 }}>{error}</p>}
-        {colis && (() => {
-          const frais = calculerFraisMagasinage(colis.date_livraison_estimee, colis.statut);
-          const joursRetard = frais > 0 ? Math.floor((new Date() - new Date(new Date(colis.date_livraison_estimee).getTime() + 10*24*60*60*1000)) / (24*60*60*1000)) : 0;
-          return (
-            <div style={{ marginTop: 20, background: 'rgba(255,255,255,0.1)', borderRadius: 10, padding: 15, textAlign: 'left', color: 'white' }}>
-              <h3 style={{ color: '#f5a623' }}>Resultat</h3>
-              <p><b>Code :</b> {colis.code_suivi}</p>
-              <p><b>Description :</b> {colis.description}</p>
-              <p><b>Poids :</b> {colis.poids} kg</p>
-              {colis.prix && <p><b>Prix :</b> {colis.prix} FCFA</p>}
-              {colis.date_livraison_estimee && <p><b>Livraison estimee :</b> {new Date(colis.date_livraison_estimee).toLocaleDateString('fr-FR')}</p>}
-              {frais > 0 && (
+        {colis && (
+          <div style={{ marginTop: 20, background: 'rgba(255,255,255,0.1)', borderRadius: 10, padding: 15, textAlign: 'left', color: 'white' }}>
+            <h3 style={{ color: '#f5a623' }}>Resultat</h3>
+            <p><b>Code :</b> {colis.code_suivi}</p>
+            <p><b>Description :</b> {colis.description}</p>
+            <p><b>Poids :</b> {colis.poids} kg</p>
+            {colis.prix && <p><b>Prix :</b> {colis.prix} FCFA</p>}
+            {colis.date_livraison_estimee && <p><b>Livraison estimee :</b> {new Date(colis.date_livraison_estimee).toLocaleDateString('fr-FR')}</p>}
+            {calculerFrais(colis.date_livraison_estimee, colis.statut) > 0 && (
+              <div>
                 <p style={{ color: '#ff6b6b', fontWeight: 'bold', background: 'rgba(255,0,0,0.2)', padding: 8, borderRadius: 5 }}>
-                  Frais de magasinage : {frais} FCFA ({joursRetard} jour{joursRetard > 1 ? 's' : ''} de retard)      
-          </p>
-{frais > 0 && colis.prix && (
-  <p style={{ color: '#ff6b6b', fontWeight: 'bold', background: 'rgba(255,0,0,0.2)', padding: 8, borderRadius: 5, marginTop: 5 }}>
-    Nouveau prix total : {parseFloat(colis.prix) + frais} FCFA
-  </p>
-)}
-              )}
+                  Frais de magasinage : {calculerFrais(colis.date_livraison_estimee, colis.statut)} FCFA
+                </p>
+                {colis.prix && (
+                  <p style={{ color: '#ff6b6b', fontWeight: 'bold', background: 'rgba(255,0,0,0.2)', padding: 8, borderRadius: 5, marginTop: 5 }}>
+                    Nouveau prix total : {parseFloat(colis.prix) + calculerFrais(colis.date_livraison_estimee, colis.statut)} FCFA
+                  </p>
+                )}
+              </div>
+            )}
+            <p><b>Depart :</b> {colis.adresse_depart}</p>
+            <p><b>Arrivee :</b> {colis.adresse_arrivee}</p>
             <p><b>Statut :</b> <span style={{ color: statutColor(colis.statut), fontWeight: 'bold' }}>{colis.statut.replace(/_/g, ' ').toUpperCase()}</span></p>
-            </div>
-          );
-        })()}
+          </div>
+        )}
         <p style={{ marginTop: 15 }}>
           <a href="/" style={{ color: '#f5a623' }}>← Retour connexion</a>
         </p>
