@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const STATUTS = ['en_attente', 'pris_en_charge', 'en_route', 'livre', 'annule'];
+const STATUTS = ['Reçu_en_Chine',"En_expédition", 'Arrivé_à_destination', 'livré'];
 
 function Dashboard({ role, token, setToken }) {
   const [colis, setColis] = useState([]);
@@ -53,11 +53,10 @@ function Dashboard({ role, token, setToken }) {
 
   const statutColor = (statut) => {
     switch(statut) {
-      case 'en_attente': return '#f39c12';
-      case 'pris_en_charge': return '#3498db';
-      case 'en_route': return '#8e44ad';
-      case 'livre': return '#27ae60';
-      case 'annule': return '#e74c3c';
+      case 'Reçu_en_Chine': return '#f39c12';
+      case 'En_expédition': return '#3498db';
+      case 'Arrivé_à_destination': return '#8e44ad';
+      case 'Livré': return '#27ae60';
       default: return '#333';
     }
   };
