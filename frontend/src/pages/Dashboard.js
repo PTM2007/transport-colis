@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
-const STATUTS = ['Reçu_en_Chine',"En_expédition", 'Arrivé_à_destination', 'livré'];
+const STATUTS = ['Recu_en_Chine', 'En_expedition', 'Arrive_a_destination', 'Livre'];
 
 function Dashboard({ role, token, setToken }) {
   const [colis, setColis] = useState([]);
-  const [form, setForm] = useState({
-    client_id: 1, description: '', poids/volume: '',
-    date_livraison_estimee: '', prix: ''
-  });
+  const [form, setForm] = useState({ client_id: 1, description: '', poids: '', adresse_depart: '', adresse_arrivee: '', date_livraison_estimee: '', prix: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-const [editId, setEditId] = useState(null);
-const [editForm, setEditForm] = useState({ date_livraison_estimee: '', prix: '' });
+  const [editId, setEditId] = useState(null);
+  const [editForm, setEditForm] = useState({ date_livraison_estimee: '', prix: '' });
+
   const chargerColis = () => {
     fetch('https://transport-colis.onrender.com/api/colis')
       .then(res => res.json())
@@ -21,8 +19,7 @@ const [editForm, setEditForm] = useState({ date_livraison_estimee: '', prix: '' 
   useEffect(() => { chargerColis(); }, []);
 
   const creerColis = async () => {
-    setError('');
-    setMessage('');
+    setError(''); setMessage('');
     try {
       const res = await fetch('https://transport-colis.onrender.com/api/colis', {
         method: 'POST',
@@ -50,32 +47,33 @@ const [editForm, setEditForm] = useState({ date_livraison_estimee: '', prix: '' 
     });
     chargerColis();
   };
-const modifierColis = async (id) => {
-  try {
-    await fetch(`https://transport-colis.onrender.com/api/colis/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm)
-    });
-    setEditId(null);
+
+  const modifierColis = async (id) => {
+    try {
+      await fetch(`https://transport-colis.onrender.com/api/colis/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm)
+      });
+      setEditId(null);
+      chargerColis();
+    } catch (err) {
+      setError('Erreur : ' + err.message);
+    }
+  };
+
+  const supprimerColis = async (id) => {
+    if (!window.confirm('Supprimer ce colis ?')) return;
+    await fetch(`https://transport-colis.onrender.com/api/colis/${id}`, { method: 'DELETE' });
     chargerColis();
-  } catch (err) {
-    setError('Erreur : ' + err.message);
-  }
-};
-const supprimerColis = async (id) => {
-  if (!window.confirm('Supprimer ce colis ?')) return;
-  await fetch(`https://transport-colis.onrender.com/api/colis/${id}`, {
-    method: 'DELETE'
-  });
-  chargerColis();
-};
+  };
+
   const statutColor = (statut) => {
     switch(statut) {
-      case 'Reçu_en_Chine': return '#f39c12';
-      case 'En_expédition': return '#3498db';
-      case 'Arrivé_à_destination': return '#8e44ad';
-      case 'Livré': return '#27ae60';
+      case 'Recu_en_Chine': return '#3498db';
+      case 'En_expedition': return '#8e44ad';
+      case 'Arrive_a_destination': return '#f39c12';
+      case 'Livre': return '#27ae60';
       default: return '#333';
     }
   };
@@ -83,19 +81,17 @@ const supprimerColis = async (id) => {
   return (
     <div style={{ maxWidth: 600, margin: '20px auto', padding: 20 }}>
       <h2>Transport - {role}</h2>
-      <button onClick={() => setToken(null)} style={{ float: 'right', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>
-        Deconnexion
-      </button>
+      <button onClick={() => setToken(null)} style={{ float: 'right', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>Deconnexion</button>
       <h3>Nouveau colis</h3>
       {message && <p style={{ color: 'green' }}>{message}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <input placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
-      <input placeholder="Poids/Volume" value={form.poids} onChange={e => setForm({ ...form, poids: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
+      <input placeholder="Poids (kg)" value={form.poids} onChange={e => setForm({ ...form, poids: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
+      <input placeholder="Adresse depart" value={form.adresse_depart} onChange={e => setForm({ ...form, adresse_depart: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
+      <input placeholder="Adresse arrivee" value={form.adresse_arrivee} onChange={e => setForm({ ...form, adresse_arrivee: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
       <input placeholder="Prix (FCFA)" value={form.prix} onChange={e => setForm({ ...form, prix: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
       <input type="datetime-local" value={form.date_livraison_estimee} onChange={e => setForm({ ...form, date_livraison_estimee: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
-      <button onClick={creerColis} style={{ width: '100%', padding: 10, background: '#28a745', color: 'white', border: 'none', borderRadius: 5 }}>
-        Envoyer le colis
-      </button>
+      <button onClick={creerColis} style={{ width: '100%', padding: 10, background: '#28a745', color: 'white', border: 'none', borderRadius: 5 }}>Envoyer le colis</button>
       <h3>Liste des colis</h3>
       {colis.length === 0 && <p>Aucun colis pour l instant.</p>}
       {colis.map(c => (
@@ -107,33 +103,19 @@ const supprimerColis = async (id) => {
           <select value={c.statut} onChange={e => changerStatut(c.id, e.target.value)} style={{ width: '100%', padding: 6, marginTop: 5 }}>
             {STATUTS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
-{editId === c.id ? (
-  <div>
-    <input type="datetime-local" value={editForm.date_livraison_estimee}
-      onChange={e => setEditForm({...editForm, date_livraison_estimee: e.target.value})}
-      style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
-    <input placeholder="Nouveau prix" value={editForm.prix}
-      onChange={e => setEditForm({...editForm, prix: e.target.value})}
-      style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
-    <button onClick={() => modifierColis(c.id)}
-      style={{ background: '#3498db', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>
-      Sauvegarder
-    </button>
-    <button onClick={() => setEditId(null)}
-      style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>
-      Annuler
-    </button>
-  </div>
-) : (
-  <button onClick={() => { setEditId(c.id); setEditForm({ date_livraison_estimee: '', prix: '' }); }}
-    style={{ background: '#f39c12', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginTop: 5 }}>
-    Modifier
-  </button>
-<button onClick={() => supprimerColis(c.id)}
-  style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginTop: 5, marginLeft: 5 }}>
-  Supprimer
-</button>
-)}
+          {editId === c.id ? (
+            <div style={{ marginTop: 8 }}>
+              <input type="datetime-local" value={editForm.date_livraison_estimee} onChange={e => setEditForm({...editForm, date_livraison_estimee: e.target.value})} style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
+              <input placeholder="Nouveau prix" value={editForm.prix} onChange={e => setEditForm({...editForm, prix: e.target.value})} style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
+              <button onClick={() => modifierColis(c.id)} style={{ background: '#3498db', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Sauvegarder</button>
+              <button onClick={() => setEditId(null)} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>Annuler</button>
+            </div>
+          ) : (
+            <div style={{ marginTop: 8 }}>
+              <button onClick={() => { setEditId(c.id); setEditForm({ date_livraison_estimee: '', prix: '' }); }} style={{ background: '#f39c12', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Modifier</button>
+              <button onClick={() => supprimerColis(c.id)} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>Supprimer</button>
+            </div>
+          )}
         </div>
       ))}
     </div>
