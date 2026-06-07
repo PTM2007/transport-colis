@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 
 const STATUTS = ['Recu_en_Chine', 'En_expedition', 'Arrive_a_destination', 'Livre'];
 
+const calculerFraisMagasinage = (date_livraison_estimee, statut) => {
+  if (statut === 'Livre' || !date_livraison_estimee) return 0;
+  const dateLivraison = new Date(date_livraison_estimee);
+  const delaiMax = new Date(dateLivraison.getTime() + 10 * 24 * 60 * 60 * 1000);
+  const aujourdhui = new Date();
+  if (aujourdhui <= delaiMax) return 0;
+  const joursRetard = Math.floor((aujourdhui - delaiMax) / (24 * 60 * 60 * 1000));
+  return joursRetard * 500;
+};
+
 function Dashboard({ role, token, setToken }) {
   const [colis, setColis] = useState([]);
   const [form, setForm] = useState({ client_id: 1, description: '', poids: '', adresse_depart: '', adresse_arrivee: '', date_livraison_estimee: '', prix: '' });
@@ -92,32 +102,43 @@ function Dashboard({ role, token, setToken }) {
       <input placeholder="Prix (FCFA)" value={form.prix} onChange={e => setForm({ ...form, prix: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
       <input type="datetime-local" value={form.date_livraison_estimee} onChange={e => setForm({ ...form, date_livraison_estimee: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
       <button onClick={creerColis} style={{ width: '100%', padding: 10, background: '#28a745', color: 'white', border: 'none', borderRadius: 5 }}>Envoyer le colis</button>
+
       <h3>Liste des colis</h3>
       {colis.length === 0 && <p>Aucun colis pour l instant.</p>}
-      {colis.map(c => (
-        <div key={c.id} style={{ border: '1px solid #ddd', padding: 10, marginBottom: 10, borderRadius: 8 }}>
-          <p><b>{c.code_suivi}</b></p>
-          <p>{c.adresse_depart} - {c.adresse_arrivee}</p>
-          {c.prix && <p>Prix : {c.prix} FCFA</p>}
-          <p>Statut : <span style={{ color: statutColor(c.statut), fontWeight: 'bold' }}>{c.statut}</span></p>
-          <select value={c.statut} onChange={e => changerStatut(c.id, e.target.value)} style={{ width: '100%', padding: 6, marginTop: 5 }}>
-            {STATUTS.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-          {editId === c.id ? (
-            <div style={{ marginTop: 8 }}>
-              <input type="datetime-local" value={editForm.date_livraison_estimee} onChange={e => setEditForm({...editForm, date_livraison_estimee: e.target.value})} style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
-              <input placeholder="Nouveau prix" value={editForm.prix} onChange={e => setEditForm({...editForm, prix: e.target.value})} style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
-              <button onClick={() => modifierColis(c.id)} style={{ background: '#3498db', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Sauvegarder</button>
-              <button onClick={() => setEditId(null)} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>Annuler</button>
-            </div>
-          ) : (
-            <div style={{ marginTop: 8 }}>
-              <button onClick={() => { setEditId(c.id); setEditForm({ date_livraison_estimee: '', prix: '' }); }} style={{ background: '#f39c12', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Modifier</button>
-              <button onClick={() => supprimerColis(c.id)} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>Supprimer</button>
-            </div>
-          )}
-        </div>
-      ))}
+      {colis.map(c => {
+        const frais = calculerFraisMagasinage(c.date_livraison_estimee, c.statut);
+        const joursRetard = frais > 0 ? Math.floor((new Date() - new Date(new Date(c.date_livraison_estimee).getTime() + 10*24*60*60*1000)) / (24*60*60*1000)) : 0;
+        return (
+          <div key={c.id} style={{ border: '1px solid #ddd', padding: 10, marginBottom: 10, borderRadius: 8 }}>
+            <p><b>{c.code_suivi}</b></p>
+            <p>{c.adresse_depart} - {c.adresse_arrivee}</p>
+            {c.prix && <p>Prix : {c.prix} FCFA</p>}
+            {c.date_livraison_estimee && <p>Livraison estimee : {new Date(c.date_livraison_estimee).toLocaleDateString('fr-FR')}</p>}
+            {frais > 0 && (
+              <p style={{ color: 'red', fontWeight: 'bold', background: '#ffe0e0', padding: 8, borderRadius: 5 }}>
+                Frais de magasinage : {frais} FCFA ({joursRetard} jour{joursRetard > 1 ? 's' : ''} de retard)
+              </p>
+            )}
+            <p>Statut : <span style={{ color: statutColor(c.statut), fontWeight: 'bold' }}>{c.statut}</span></p>
+            <select value={c.statut} onChange={e => changerStatut(c.id, e.target.value)} style={{ width: '100%', padding: 6, marginTop: 5 }}>
+              {STATUTS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            {editId === c.id ? (
+              <div style={{ marginTop: 8 }}>
+                <input type="datetime-local" value={editForm.date_livraison_estimee} onChange={e => setEditForm({...editForm, date_livraison_estimee: e.target.value})} style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
+                <input placeholder="Nouveau prix" value={editForm.prix} onChange={e => setEditForm({...editForm, prix: e.target.value})} style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
+                <button onClick={() => modifierColis(c.id)} style={{ background: '#3498db', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Sauvegarder</button>
+                <button onClick={() => setEditId(null)} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>Annuler</button>
+              </div>
+            ) : (
+              <div style={{ marginTop: 8 }}>
+                <button onClick={() => { setEditId(c.id); setEditForm({ date_livraison_estimee: '', prix: '' }); }} style={{ background: '#f39c12', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Modifier</button>
+                <button onClick={() => supprimerColis(c.id)} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>Supprimer</button>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
