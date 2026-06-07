@@ -17,11 +17,10 @@ function Suivi() {
 
   const statutColor = (statut) => {
     switch(statut) {
-      case 'en_attente': return '#f39c12';
-      case 'pris_en_charge': return '#3498db';
-      case 'en_route': return '#8e44ad';
-      case 'livré': return '#27ae60';
-      case 'annulé': return '#e74c3c';
+      case 'Reçu_en_Chine': return '#f39c12';
+      case 'En_expédition': return '#3498db';
+      case 'Arrivé_à_destination': return '#8e44ad';
+      case 'livré': return '#8e44ad' ;
       default: return '#333';
     }
   };
@@ -71,8 +70,6 @@ function Suivi() {
             <p><b>Code :</b> {colis.code_suivi}</p>
             <p><b>Description :</b> {colis.description}</p>
             <p><b>Poids :</b> {colis.poids} kg</p>
-            <p><b>Départ :</b> {colis.adresse_depart}</p>
-            <p><b>Arrivée :</b> {colis.adresse_arrivee}</p>
             {colis.prix && <p><b> Prix :</b> {colis.prix} FCFA</p>}
             {colis.date_livraison_estimee && (
               <p><b> Livraison estimée :</b> {new Date(colis.date_livraison_estimee).toLocaleString('fr-FR')}</p>
