@@ -9,7 +9,7 @@ const calculerFraisMagasinage = (date_livraison_estimee, statut) => {
   const aujourdhui = new Date();
   if (aujourdhui <= delaiMax) return 0;
   const joursRetard = Math.floor((aujourdhui - delaiMax) / (24 * 60 * 60 * 1000));
-  return joursRetard * 500;
+  return joursRetard * 200;
 };
 
 function Dashboard({ role, token, setToken }) {

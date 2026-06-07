@@ -8,7 +8,7 @@ const calculerFraisMagasinage = (date_livraison_estimee, statut) => {
   const aujourdhui = new Date();
   if (aujourdhui <= delaiMax) return 0;
   const joursRetard = Math.floor((aujourdhui - delaiMax) / (24 * 60 * 60 * 1000));
-  return joursRetard * 500;
+  return joursRetard * 200;
 };
 
 function Suivi() {
@@ -68,9 +68,7 @@ function Suivi() {
                   Frais de magasinage : {frais} FCFA ({joursRetard} jour{joursRetard > 1 ? 's' : ''} de retard)
                 </p>
               )}
-              <p><b>Depart :</b> {colis.adresse_depart}</p>
-              <p><b>Arrivee :</b> {colis.adresse_arrivee}</p>
-              <p><b>Statut :</b> <span style={{ color: statutColor(colis.statut), fontWeight: 'bold' }}>{colis.statut.replace(/_/g, ' ').toUpperCase()}</span></p>
+            <p><b>Statut :</b> <span style={{ color: statutColor(colis.statut), fontWeight: 'bold' }}>{colis.statut.replace(/_/g, ' ').toUpperCase()}</span></p>
             </div>
           );
         })()}
