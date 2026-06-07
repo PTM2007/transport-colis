@@ -46,5 +46,18 @@ router.get('/:code', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { date_livraison_estimee, prix } = req.body;
+  try {
+    await db.query(
+      'UPDATE colis SET date_livraison_estimee = $1, prix = $2 WHERE id = $3',
+      [date_livraison_estimee || null, prix || null, id]
+    );
+    res.json({ message: 'Colis mis a jour !' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
