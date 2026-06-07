@@ -63,6 +63,13 @@ const modifierColis = async (id) => {
     setError('Erreur : ' + err.message);
   }
 };
+const supprimerColis = async (id) => {
+  if (!window.confirm('Supprimer ce colis ?')) return;
+  await fetch(`https://transport-colis.onrender.com/api/colis/${id}`, {
+    method: 'DELETE'
+  });
+  chargerColis();
+};
   const statutColor = (statut) => {
     switch(statut) {
       case 'Reçu_en_Chine': return '#f39c12';
@@ -122,6 +129,10 @@ const modifierColis = async (id) => {
     style={{ background: '#f39c12', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginTop: 5 }}>
     Modifier
   </button>
+<button onClick={() => supprimerColis(c.id)}
+  style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginTop: 5, marginLeft: 5 }}>
+  Supprimer
+</button>
 )}
         </div>
       ))}
