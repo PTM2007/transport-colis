@@ -19,12 +19,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Serveur transport-colis OK !' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
-});
-
 app.get('/setup', async (req, res) => {
-  const db = require('./db');
   try {
     await db.query(`CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
@@ -51,4 +46,8 @@ app.get('/setup', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`Serveur demarre sur le port ${PORT}`);
 });
