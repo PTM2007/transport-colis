@@ -10,7 +10,8 @@ function Dashboard({ role, token, setToken }) {
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
+const [editId, setEditId] = useState(null);
+const [editForm, setEditForm] = useState({ date_livraison_estimee: '', prix: '' });
   const chargerColis = () => {
     fetch('https://transport-colis.onrender.com/api/colis')
       .then(res => res.json())
@@ -49,7 +50,19 @@ function Dashboard({ role, token, setToken }) {
     });
     chargerColis();
   };
-
+const modifierColis = async (id) => {
+  try {
+    await fetch(`https://transport-colis.onrender.com/api/colis/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editForm)
+    });
+    setEditId(null);
+    chargerColis();
+  } catch (err) {
+    setError('Erreur : ' + err.message);
+  }
+};
   const statutColor = (statut) => {
     switch(statut) {
       case 'Reçu_en_Chine': return '#f39c12';
@@ -87,6 +100,29 @@ function Dashboard({ role, token, setToken }) {
           <select value={c.statut} onChange={e => changerStatut(c.id, e.target.value)} style={{ width: '100%', padding: 6, marginTop: 5 }}>
             {STATUTS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
+{editId === c.id ? (
+  <div>
+    <input type="datetime-local" value={editForm.date_livraison_estimee}
+      onChange={e => setEditForm({...editForm, date_livraison_estimee: e.target.value})}
+      style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
+    <input placeholder="Nouveau prix" value={editForm.prix}
+      onChange={e => setEditForm({...editForm, prix: e.target.value})}
+      style={{ display: 'block', width: '100%', marginBottom: 5, padding: 6 }} />
+    <button onClick={() => modifierColis(c.id)}
+      style={{ background: '#3498db', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>
+      Sauvegarder
+    </button>
+    <button onClick={() => setEditId(null)}
+      style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5 }}>
+      Annuler
+    </button>
+  </div>
+) : (
+  <button onClick={() => { setEditId(c.id); setEditForm({ date_livraison_estimee: '', prix: '' }); }}
+    style={{ background: '#f39c12', color: 'white', border: 'none', padding: '5px 10px', borderRadius: 5, marginTop: 5 }}>
+    Modifier
+  </button>
+)}
         </div>
       ))}
     </div>
