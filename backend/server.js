@@ -22,3 +22,33 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
 });
+
+app.get('/setup', async (req, res) => {
+  const db = require('./db');
+  try {
+    await db.query(`CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      nom VARCHAR(100),
+      prenom VARCHAR(100),
+      email VARCHAR(100) UNIQUE,
+      mot_de_passe VARCHAR(255),
+      telephone VARCHAR(20),
+      role VARCHAR(20) DEFAULT 'client'
+    )`);
+    await db.query(`CREATE TABLE IF NOT EXISTS colis (
+      id SERIAL PRIMARY KEY,
+      code_suivi VARCHAR(50),
+      client_id INT,
+      description TEXT,
+      poids FLOAT,
+      adresse_depart TEXT,
+      adresse_arrivee TEXT,
+      date_livraison_estimee DATE,
+      prix FLOAT,
+      statut VARCHAR(50) DEFAULT 'en attente'
+    )`);
+    res.json({ message: 'Tables creees !' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
