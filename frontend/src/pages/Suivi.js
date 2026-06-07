@@ -69,7 +69,7 @@ function Suivi() {
             <h3 style={{ color: '#f5a623' }}> Résultat</h3>
             <p><b>Code :</b> {colis.code_suivi}</p>
             <p><b>Description :</b> {colis.description}</p>
-            <p><b>Poids :</b> {colis.poids} kg</p>
+            <p><b>Poids/Volume :</b> {colis.poids} </p>
             {colis.prix && <p><b> Prix :</b> {colis.prix} FCFA</p>}
             {colis.date_livraison_estimee && (
               <p><b> Livraison estimée :</b> {new Date(colis.date_livraison_estimee).toLocaleString('fr-FR')}</p>
