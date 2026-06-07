@@ -5,8 +5,7 @@ const STATUTS = ['Reçu_en_Chine',"En_expédition", 'Arrivé_à_destination', 'l
 function Dashboard({ role, token, setToken }) {
   const [colis, setColis] = useState([]);
   const [form, setForm] = useState({
-    client_id: 1, description: '', poids: '',
-    adresse_depart: '', adresse_arrivee: '',
+    client_id: 1, description: '', poids/volume: '',
     date_livraison_estimee: '', prix: ''
   });
   const [message, setMessage] = useState('');
@@ -71,9 +70,7 @@ function Dashboard({ role, token, setToken }) {
       {message && <p style={{ color: 'green' }}>{message}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <input placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
-      <input placeholder="Poids (kg)" value={form.poids} onChange={e => setForm({ ...form, poids: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
-      <input placeholder="Adresse depart" value={form.adresse_depart} onChange={e => setForm({ ...form, adresse_depart: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
-      <input placeholder="Adresse arrivee" value={form.adresse_arrivee} onChange={e => setForm({ ...form, adresse_arrivee: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
+      <input placeholder="Poids/Volume" value={form.poids} onChange={e => setForm({ ...form, poids: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
       <input placeholder="Prix (FCFA)" value={form.prix} onChange={e => setForm({ ...form, prix: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
       <input type="datetime-local" value={form.date_livraison_estimee} onChange={e => setForm({ ...form, date_livraison_estimee: e.target.value })} style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
       <button onClick={creerColis} style={{ width: '100%', padding: 10, background: '#28a745', color: 'white', border: 'none', borderRadius: 5 }}>
