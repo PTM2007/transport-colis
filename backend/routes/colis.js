@@ -25,4 +25,26 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.put('/:id/statut', async (req, res) => {
+  const { id } = req.params;
+  const { statut } = req.body;
+  try {
+    await db.query('UPDATE colis SET statut = $1 WHERE id = $2', [statut, id]);
+    res.json({ message: 'Statut mis a jour !' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/:code', async (req, res) => {
+  const { code } = req.params;
+  try {
+    const result = await db.query('SELECT * FROM colis WHERE code_suivi = $1', [code]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Colis non trouve' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
