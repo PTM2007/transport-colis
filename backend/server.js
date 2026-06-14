@@ -47,21 +47,8 @@ app.get('/setup', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.get('/setup2', async (req, res) => {
-  const db = require('./db');
-  try {
-    await db.query(`ALTER TABLE colis ADD COLUMN IF NOT EXISTS nom_client VARCHAR(100)`);
-    await db.query(`ALTER TABLE colis ADD COLUMN IF NOT EXISTS telephone_client VARCHAR(20)`);
-    await db.query(`ALTER TABLE colis ADD COLUMN IF NOT EXISTS date_arrivee TIMESTAMP`);
-    await db.query(`ALTER TABLE colis ADD COLUMN IF NOT EXISTS notif_j7_envoyee BOOLEAN DEFAULT false`);
-    await db.query(`ALTER TABLE colis ADD COLUMN IF NOT EXISTS notif_j10_envoyee BOOLEAN DEFAULT false`);
-    res.json({ message: 'Colonnes ajoutees !' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-app.get('/setup2', async (req, res) => {
-  const db = require('./db');
   try {
     await db.query('ALTER TABLE colis ADD COLUMN IF NOT EXISTS nom_client VARCHAR(100)');
     await db.query('ALTER TABLE colis ADD COLUMN IF NOT EXISTS telephone_client VARCHAR(20)');
@@ -73,6 +60,7 @@ app.get('/setup2', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.listen(PORT, () => {
   console.log(`Serveur demarre sur le port ${PORT}`);
 });
